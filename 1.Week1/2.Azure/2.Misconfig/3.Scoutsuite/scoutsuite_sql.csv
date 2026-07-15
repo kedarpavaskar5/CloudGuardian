@@ -1,0 +1,13 @@
+rule_id,description,level,flagged_items,resource,terraform_toggle,delta
+sqldatabase-allow-any-ip,SQL Allow Ingress 0.0.0.0/0 (Any IP),warning,2,sql-cloudguardian-lab-6thil,misconfig_sql_allow_all_ips,NEW
+sqldatabase-servers-no-auditing,Server Auditing Disabled,warning,1,sql-cloudguardian-lab-6thil,misconfig_disable_sql_logging,PRE-EXISTING
+sqldatabase-databases-no-auditing,Database Auditing Disabled,warning,1,sqldb-cloudguardian-lab,N/A,PRE-EXISTING
+sqldatabase-servers-no-threat-detection,ATP Disabled (Server),warning,1,sql-cloudguardian-lab-6thil,N/A,PRE-EXISTING
+sqldatabase-databases-no-threat-detection,Threat Detection Disabled (DB),warning,1,sqldb-cloudguardian-lab,N/A,PRE-EXISTING
+sqldatabase-servers-TDE-not-encrypted-with-customer-managed-key,TDE Not Encrypted with CMK,warning,1,sql-cloudguardian-lab-6thil,N/A,PRE-EXISTING
+sqldatabase-servers-no-ad-admin-configured,AD Admin Not Configured,warning,1,sql-cloudguardian-lab-6thil,N/A,PRE-EXISTING
+sqldatabase-servers-threat-detection-send-alerts-disabled,ATP Alerts Disabled (Server),warning,1,sql-cloudguardian-lab-6thil,N/A,PRE-EXISTING
+sqldatabase-databases-threat-detection-send-alerts-disabled,Threat Alerts Disabled (DB),warning,1,sqldb-cloudguardian-lab,N/A,PRE-EXISTING
+sqldatabase-servers-vulnerability-email-notif-to-admins-owners-not-set,Email Notifications Not Set,warning,1,sql-cloudguardian-lab-6thil,N/A,PRE-EXISTING
+sqldatabase-servers-vulnerability-recurring-scans-disabled,Recurring Scans Disabled,warning,1,sql-cloudguardian-lab-6thil,N/A,PRE-EXISTING
+sqldatabase-servers-vulnerability-send-scan-reports-to-not-configured,Scan Reports Not Configured,warning,1,sql-cloudguardian-lab-6thil,N/A,PRE-EXISTING

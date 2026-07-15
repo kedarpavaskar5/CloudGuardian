@@ -1,0 +1,9 @@
+check_id,resource_name,severity,terraform_misconfig,delta_status
+network_ssh_internet_access_restricted,nsg-web-cloudguardian-lab,high,M10 / M11,NEW FAIL
+network_subnet_nsg_associated,snet-web-cloudguardian-lab,high,M12,NEW FAIL
+sqlserver_unrestricted_inbound_access,sql-cloudguardian-lab-6thil,critical,M13,NEW FAIL
+storage_default_network_access_rule_is_denied,stcloudguardianlab6thil,high,M2,NEW FAIL
+storage_secure_transfer_required_is_enabled,stcloudguardianlab6thil,high,M3,NEW FAIL
+storage_ensure_minimum_tls_version_12,stcloudguardianlab6thil,medium,M4,NEW FAIL
+storage_default_to_entra_authorization_enabled,stcloudguardianlab6thil,medium,M5,NEW FAIL
+vm_linux_enforce_ssh_authentication,vm-web-cloudguardian-lab,high,M9,NEW FAIL

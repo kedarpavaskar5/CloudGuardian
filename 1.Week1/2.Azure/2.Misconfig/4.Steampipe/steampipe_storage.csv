@@ -1,0 +1,2 @@
+name,allow_blob_public_access,public_network_access,enable_https_traffic_only,minimum_tls_version,default_to_oauth_authentication,container_name,container_access_type
+stcloudguardianlab6thil,true,Allow,false,TLS1_0,false,app-data,blob

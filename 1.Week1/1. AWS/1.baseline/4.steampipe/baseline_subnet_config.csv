@@ -1,0 +1,6 @@
+subnet_id,vpc_id,cidr_block,availability_zone,map_public_ip_on_launch
+subnet-07f4d16b113b25417,vpc-0bdec8ffc827ded05,172.31.0.0/20,ap-south-1b,true
+subnet-014929246c544396c,vpc-056acc9b951114346,10.0.1.0/24,ap-south-1a,true
+subnet-06415df4407c53071,vpc-056acc9b951114346,10.0.2.0/24,ap-south-1b,false
+subnet-08bc9c2ef90bd0fba,vpc-0bdec8ffc827ded05,172.31.16.0/20,ap-south-1c,true
+subnet-0844cc93b5756c14d,vpc-0bdec8ffc827ded05,172.31.32.0/20,ap-south-1a,true

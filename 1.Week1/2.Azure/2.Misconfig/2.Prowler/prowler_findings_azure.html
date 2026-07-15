@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markdown Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem 4rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 { color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
+        code { background-color: #f1f1f1; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+        pre { background-color: #f1f1f1; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+        img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 1rem; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f6f8; }
+        blockquote { border-left: 4px solid #0366d6; margin: 0; padding-left: 1rem; color: #586069; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prowler Audit Report — Azure</h1>
+<h2>CloudGuardian — CAP-CSE-3W | IIT Roorkee × Futurense</h2>
+<h3>PG Certificate in AI/GenAI Powered Cybersecurity</h3>
+<hr />
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Student</strong></td>
+<td>Vinay</td>
+</tr>
+<tr>
+<td><strong>Azure Subscription</strong></td>
+<td>7e3283a3-d466-4e6f-95b1-543eec016e08</td>
+</tr>
+<tr>
+<td><strong>Resource Group</strong></td>
+<td>rg-cloudguardian-lab</td>
+</tr>
+<tr>
+<td><strong>Tool</strong></td>
+<td>Prowler v4.x (Open Source CIS Scanner)</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>2026-07-04</td>
+</tr>
+<tr>
+<td><strong>Purpose</strong></td>
+<td>Broad compliance scanning and delta comparison of 16 injected misconfigurations</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>What is Prowler?</h2>
+<p>Prowler is an open-source security tool that performs CIS compliance checks, security best practice assessments, and incident response readiness checks across cloud providers. 
+Unlike ScoutSuite (which uses a generic rule engine) and Steampipe (SQL-based), Prowler is strictly aligned with the <strong>CIS Microsoft Azure Foundations Benchmark</strong>.</p>
+<p><strong>How it was run:</strong></p>
+<pre><code class="language-bash">conda activate prowler_env
+prowler azure --az-cli-auth --output-directory prowler-report/insecure --output-file prowler-insecure
+</code></pre>
+<hr />
+<h2>Executive Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Baseline (Secure)</th>
+<th>Insecure (16 Misconfigs)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Overall Pass/Fail</strong></td>
+<td>~14% Pass / 86% Fail</td>
+<td>~12% Pass / 88% Fail</td>
+</tr>
+<tr>
+<td><strong>Misconfigs Detected</strong></td>
+<td>—</td>
+<td><strong>8 / 16 (50%)</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Key Insight:</strong> Prowler generated massive CSV and HTML reports with hundreds of findings. However, a significant portion of these are pre-existing "fails" due to Azure's default configurations not adhering to strict CIS benchmarks (e.g., Azure Defender being turned off by default). </p>
+<p>By running a strict delta analysis (comparing the baseline CSV against the insecure CSV), we isolated exactly which of our 16 injected misconfigurations triggered new Prowler alerts.</p>
+</blockquote>
+<hr />
+<h2>Baseline vs Insecure — Delta Analysis (New Fails)</h2>
+<p>The following <code>FAIL</code> findings appeared <strong>only</strong> after the 16 misconfigurations were injected. 
+<em>(Note: Resource names have been mapped to reflect the updated <code>stcloudguardianlab6thil</code> storage account).</em></p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Prowler Check ID</th>
+<th>Resource Name</th>
+<th>Severity</th>
+<th>Terraform Misconfig</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Network</strong></td>
+<td><code>network_ssh_internet_access_restricted</code></td>
+<td><code>nsg-web-cloudguardian-lab</code></td>
+<td>🔴 High</td>
+<td>M10 (SSH Open) / M11 (Any-Any)</td>
+</tr>
+<tr>
+<td><strong>Network</strong></td>
+<td><code>network_subnet_nsg_associated</code></td>
+<td><code>snet-web-cloudguardian-lab</code></td>
+<td>🔴 High</td>
+<td>M12 (Subnet NSG Removed)</td>
+</tr>
+<tr>
+<td><strong>SQL</strong></td>
+<td><code>sqlserver_unrestricted_inbound_access</code></td>
+<td><code>sql-cloudguardian-lab-6thil</code></td>
+<td>🔴 Critical</td>
+<td>M13 (SQL Any IP)</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td><code>storage_default_network_access_rule_is_denied</code></td>
+<td><code>stcloudguardianlab6thil</code></td>
+<td>🔴 High</td>
+<td>M2 (Public Network Access)</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td><code>storage_secure_transfer_required_is_enabled</code></td>
+<td><code>stcloudguardianlab6thil</code></td>
+<td>🔴 High</td>
+<td>M3 (Secure transfer)</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td><code>storage_ensure_minimum_tls_version_12</code></td>
+<td><code>stcloudguardianlab6thil</code></td>
+<td>🟡 Medium</td>
+<td>M4 (Min TLS 1.0)</td>
+</tr>
+<tr>
+<td><strong>Storage</strong></td>
+<td><code>storage_default_to_entra_authorization_enabled</code></td>
+<td><code>stcloudguardianlab6thil</code></td>
+<td>🟡 Medium</td>
+<td>M5 (Shared Key Access)</td>
+</tr>
+<tr>
+<td><strong>Compute</strong></td>
+<td><code>vm_linux_enforce_ssh_authentication</code></td>
+<td><code>vm-web-cloudguardian-lab</code></td>
+<td>🔴 High</td>
+<td>M9 (SSH Password Auth)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Misconfig-to-Prowler Mapping (16/16 Verification)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Misconfiguration</th>
+<th>Terraform Toggle</th>
+<th>Prowler Delta Detection</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>Public Blob Container</td>
+<td><code>misconfig_storage_public_container</code></td>
+<td>—</td>
+<td>❌ Missed (or masked by baseline)</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Public Network Access</td>
+<td><code>misconfig_storage_allow_public_network_access</code></td>
+<td><code>storage_default_network_access_rule_is_denied</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Secure Transfer Disabled</td>
+<td><code>misconfig_storage_disable_secure_transfer</code></td>
+<td><code>storage_secure_transfer_required_is_enabled</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>Min TLS Lowered (1.0)</td>
+<td><code>misconfig_storage_min_tls_version</code></td>
+<td><code>storage_ensure_minimum_tls_version_12</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Shared Key Access</td>
+<td><code>misconfig_storage_allow_shared_key_access</code></td>
+<td><code>storage_default_to_entra_authorization_enabled</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>CORS Allow All</td>
+<td><code>misconfig_storage_cors_allow_all</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>Owner Role at RG</td>
+<td><code>misconfig_iam_owner_role_at_rg_scope</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>VM Identity Overprivileged</td>
+<td><code>misconfig_vm_identity_over_privileged</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M9</td>
+<td>SSH Password Auth</td>
+<td><code>misconfig_vm_allow_password_auth</code></td>
+<td><code>vm_linux_enforce_ssh_authentication</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M10</td>
+<td>SSH Open to Internet</td>
+<td><code>misconfig_ssh_open_to_internet</code></td>
+<td><code>network_ssh_internet_access_restricted</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M11</td>
+<td>NSG Allow Any-Any</td>
+<td><code>misconfig_nsg_allow_any_any</code></td>
+<td>(Caught under M10 alert)</td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M12</td>
+<td>Subnet NSG Removed</td>
+<td><code>misconfig_vm_remove_nsg_association</code></td>
+<td><code>network_subnet_nsg_associated</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M13</td>
+<td>SQL Allow All IPs</td>
+<td><code>misconfig_sql_allow_all_ips</code></td>
+<td><code>sqlserver_unrestricted_inbound_access</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M14</td>
+<td>Storage Logging Disabled</td>
+<td><code>misconfig_disable_storage_logging</code></td>
+<td>—</td>
+<td>❌ Missed (Pre-existing in baseline)</td>
+</tr>
+<tr>
+<td>M15</td>
+<td>SQL Logging Disabled</td>
+<td><code>misconfig_disable_sql_logging</code></td>
+<td>—</td>
+<td>❌ Missed (Pre-existing in baseline)</td>
+</tr>
+<tr>
+<td>M16</td>
+<td>Short Log Retention</td>
+<td><code>misconfig_short_log_retention</code></td>
+<td>—</td>
+<td>❌ Missed (Pre-existing in baseline)</td>
+</tr>
+</tbody>
+</table>
+<h3>Confirmation: 8 / 16 Detected (50%) in strict delta analysis</h3>
+<hr />
+<h2>Gap Analysis — Prowler Blind Spots</h2>
+<p>While Prowler is excellent for overarching CIS compliance, it struggles with highly specific configuration drifts when analyzing strict deltas:</p>
+<h3>1. The "Pre-existing Fail" Problem (Logging Gaps)</h3>
+<p>Prowler flags logging configurations (M14, M15, M16) as <code>FAIL</code> even in the secure baseline because our baseline architecture does not implement enterprise-grade Log Analytics for every single resource by default. Therefore, when we <em>explicitly</em> disable them via Terraform in the insecure scan, Prowler doesn't register it as a <em>new</em> threat. It was already failing.</p>
+<h3>2. IAM/RBAC Granularity Gaps</h3>
+<ul>
+<li><strong>M7 (Owner at RG):</strong> Prowler heavily focuses on Subscription-level IAM (like checking if there are more than 3 Subscription Owners). It completely missed the assignment of the <code>Owner</code> role at the specific Resource Group level.</li>
+<li><strong>M8 (VM Managed Identity):</strong> Prowler checks if Managed Identities are <em>used</em>, but does not thoroughly crawl Azure AD to see if a System Assigned Identity has been granted overly permissive roles (like Contributor) at higher scopes.</li>
+</ul>
+<h3>3. Application-Level Gaps</h3>
+<ul>
+<li><strong>M6 (CORS wildcard):</strong> Prowler does not inspect Cross-Origin Resource Sharing rules on Blob Services.</li>
+<li><strong>M1 (Public Container):</strong> Interestingly, while Prowler checks if the <em>Storage Account</em> allows public access (M2), it struggles to accurately report individual blob container ACL drifts in this specific dataset without generating false positives.</li>
+</ul>
+<hr />
+<h2>Final CloudGuardian Tool Triangulation Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Misconfiguration</th>
+<th>Prowler (CIS)</th>
+<th>ScoutSuite (Rules)</th>
+<th>Steampipe (SQL)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>Public Blob Container</td>
+<td>❌</td>
+<td>✅ Danger</td>
+<td>✅ Query 2</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Public Network Access</td>
+<td>✅ High</td>
+<td>✅ Warning</td>
+<td>✅ Query 1</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Secure Transfer Disabled</td>
+<td>✅ High</td>
+<td>✅ Warning</td>
+<td>✅ Query 1</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>Min TLS Lowered</td>
+<td>✅ Medium</td>
+<td>❌</td>
+<td>✅ Query 1</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Shared Key Access</td>
+<td>✅ Medium</td>
+<td>❌</td>
+<td>✅ Query 11b</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>CORS Allow All</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ Query 11a</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>Owner at RG Scope</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ Query 3</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>VM Identity Overprivileged</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ Query 3</td>
+</tr>
+<tr>
+<td>M9</td>
+<td>SSH Password Auth</td>
+<td>✅ High</td>
+<td>❌</td>
+<td>✅ Query 6</td>
+</tr>
+<tr>
+<td>M10</td>
+<td>SSH Open to Internet</td>
+<td>✅ High</td>
+<td>✅ Warning</td>
+<td>✅ Query 5</td>
+</tr>
+<tr>
+<td>M11</td>
+<td>NSG Allow Any-Any</td>
+<td>✅ High</td>
+<td>✅ Danger</td>
+<td>✅ Query 5</td>
+</tr>
+<tr>
+<td>M12</td>
+<td>Subnet NSG Removed</td>
+<td>✅ High</td>
+<td>❌</td>
+<td>✅ Query 9</td>
+</tr>
+<tr>
+<td>M13</td>
+<td>SQL Allow All IPs</td>
+<td>✅ Critical</td>
+<td>✅ Warning</td>
+<td>✅ Query 4</td>
+</tr>
+<tr>
+<td>M14</td>
+<td>Storage Logging Disabled</td>
+<td>⚠️ Baseline Masked</td>
+<td>❌</td>
+<td>✅ Query 8</td>
+</tr>
+<tr>
+<td>M15</td>
+<td>SQL Logging Disabled</td>
+<td>⚠️ Baseline Masked</td>
+<td>⚠️ Partial</td>
+<td>✅ Query 10</td>
+</tr>
+<tr>
+<td>M16</td>
+<td>Short Log Retention</td>
+<td>⚠️ Baseline Masked</td>
+<td>❌</td>
+<td>✅ Query 12</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Conclusion:</strong> 
+- <strong>Prowler</strong> is best for initial CIS compliance benchmarking.
+- <strong>ScoutSuite</strong> provides the best visual dashboard for non-technical stakeholders, particularly for network topology.
+- <strong>Steampipe</strong> is the <em>only</em> tool capable of 100% precise detection of targeted engineering drifts, proving the necessity of custom SQL validation in a mature DevSecOps pipeline.</p>
+</blockquote>
+    </div>
+</body>
+</html>

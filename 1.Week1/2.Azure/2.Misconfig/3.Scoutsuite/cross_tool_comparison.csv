@@ -1,0 +1,17 @@
+misconfig_id,misconfiguration,terraform_toggle,prowler,scoutsuite,steampipe,all_tools_combined
+M1,Public Blob Container,misconfig_storage_public_container,FAIL,danger,Query 2,DETECTED
+M2,Public Network Access,misconfig_storage_allow_public_network_access,FAIL,warning,Query 1,DETECTED
+M3,Secure Transfer Disabled,misconfig_storage_disable_secure_transfer,FAIL,warning,Query 1,DETECTED
+M4,Min TLS Lowered (1.0),misconfig_storage_min_tls_version,FAIL,NOT DETECTED,Query 1,DETECTED
+M5,Shared Key Access,misconfig_storage_allow_shared_key_access,NOT DETECTED,NOT DETECTED,Query 11b,DETECTED
+M6,CORS Allow All,misconfig_storage_cors_allow_all,NOT DETECTED,NOT DETECTED,Query 11a,DETECTED
+M7,Owner Role at RG,misconfig_iam_owner_role_at_rg_scope,FAIL,NOT DETECTED,Query 3,DETECTED
+M8,VM Identity Overprivileged,misconfig_vm_identity_over_privileged,NOT DETECTED,NOT DETECTED,Query 3,DETECTED
+M9,SSH Password Auth,misconfig_vm_allow_password_auth,FAIL,NOT DETECTED,Query 6,DETECTED
+M10,SSH Open to Internet,misconfig_ssh_open_to_internet,FAIL,warning,Query 5,DETECTED
+M11,NSG Allow Any-Any,misconfig_nsg_allow_any_any,FAIL,danger,Query 5,DETECTED
+M12,Subnet NSG Removed,misconfig_vm_remove_nsg_association,NOT DETECTED,NOT DETECTED,Query 9,DETECTED
+M13,SQL Allow All IPs,misconfig_sql_allow_all_ips,FAIL,warning,Query 4,DETECTED
+M14,Storage Logging Disabled,misconfig_disable_storage_logging,FAIL,NOT DETECTED,Query 8,DETECTED
+M15,SQL Logging Disabled,misconfig_disable_sql_logging,FAIL,partial,Query 10,DETECTED
+M16,Short Log Retention,misconfig_short_log_retention,FAIL,NOT DETECTED,Query 12,DETECTED

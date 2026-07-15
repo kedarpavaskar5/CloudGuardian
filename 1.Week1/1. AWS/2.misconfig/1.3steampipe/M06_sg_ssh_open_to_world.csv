@@ -1,0 +1,3 @@
+group_name,group_id,from_port,to_port,ip_ranges
+launch-wizard-1,sg-0aaba2fb7e64252aa,22,22,"[{""CidrIp"":""0.0.0.0/0"",""Description"":null}]"
+cloudguardian-web-sg,sg-0fdba0a657788f1d7,22,22,"[{""CidrIp"":""0.0.0.0/0"",""Description"":null}]"

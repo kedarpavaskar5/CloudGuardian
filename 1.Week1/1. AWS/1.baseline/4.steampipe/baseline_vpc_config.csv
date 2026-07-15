@@ -1,0 +1,3 @@
+vpc_id,cidr_block,is_default,state,instance_tenancy
+vpc-056acc9b951114346,10.0.0.0/16,false,available,default
+vpc-0bdec8ffc827ded05,172.31.0.0/16,true,available,default

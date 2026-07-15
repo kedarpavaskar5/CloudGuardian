@@ -1,0 +1,2 @@
+db_instance_identifier,publicly_accessible,vpc_id
+cloudguardian-db,true,vpc-056acc9b951114346

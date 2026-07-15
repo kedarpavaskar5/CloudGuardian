@@ -1,0 +1,3 @@
+principal_type,role_name,scope,finding
+ServicePrincipal,Owner,/subscriptions/7e3283a3-d466-4e6f-95b1-543eec016e08/resourceGroups/rg-cloudguardian-lab,owner_at_rg_scope
+ServicePrincipal,Contributor,/subscriptions/7e3283a3-d466-4e6f-95b1-543eec016e08,vm_identity_over_privileged

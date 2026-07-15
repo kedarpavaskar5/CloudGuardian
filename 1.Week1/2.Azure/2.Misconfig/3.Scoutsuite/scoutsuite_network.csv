@@ -1,0 +1,6 @@
+rule_id,description,level,flagged_items,nsg,triggered_by,terraform_toggle,delta
+network-security-groups-rule-inbound-internet-all,All Inbound Access Allowed from Internet,danger,1,nsg-web-cloudguardian-lab,MISCONFIG-Allow-Any-Any,misconfig_nsg_allow_any_any,NEW
+network-security-groups-rule-inbound-SSH,Inbound SSH Access Allowed,warning,1,nsg-web-cloudguardian-lab,Allow-SSH-Inbound + MISCONFIG-Allow-Any-Any,misconfig_ssh_open_to_internet,NEW
+network-security-groups-rule-inbound-RDP,Inbound RDP Access Allowed,warning,1,nsg-web-cloudguardian-lab,MISCONFIG-Allow-Any-Any,misconfig_nsg_allow_any_any,NEW
+network-security-groups-rule-inbound-MsSQL,Inbound MsSQL Access Allowed,warning,1,nsg-web-cloudguardian-lab,MISCONFIG-Allow-Any-Any,misconfig_nsg_allow_any_any,NEW
+network-security-groups-rule-inbound-UDP,Inbound UDP Access Allowed,warning,1,nsg-web-cloudguardian-lab,MISCONFIG-Allow-Any-Any,misconfig_nsg_allow_any_any,NEW

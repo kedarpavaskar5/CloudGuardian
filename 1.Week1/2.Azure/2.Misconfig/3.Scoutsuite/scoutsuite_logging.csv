@@ -1,0 +1,9 @@
+rule_id,description,level,flagged_items,delta
+create_delete_firewall_rule_exist,Alert Missing: SQL Server Firewall Rule Changes,warning,1,PRE-EXISTING
+create_update_NSG_exist,Alert Missing: NSG Create/Update,warning,1,PRE-EXISTING
+create_update_NSG_rule_exist,Alert Missing: NSG Rule Create/Update,warning,1,PRE-EXISTING
+delete_NSG_exist,Alert Missing: NSG Delete,warning,1,PRE-EXISTING
+delete_NSG_rule_exist,Alert Missing: NSG Rule Delete,warning,1,PRE-EXISTING
+create_update_security_solution_exist,Alert Missing: Security Solution Create/Update,warning,1,PRE-EXISTING
+delete_security_solution_exist,Alert Missing: Security Solution Delete,warning,1,PRE-EXISTING
+logging-monitoring-log-alert-not-exist-create-policy-assignment,Alert Missing: Create Policy Assignment,warning,1,PRE-EXISTING

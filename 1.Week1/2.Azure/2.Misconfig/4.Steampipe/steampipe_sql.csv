@@ -1,0 +1,2 @@
+server_name,firewall_rule_name,start_ip,end_ip,tde_enabled,min_tls,auditing_enabled
+sql-cloudguardian-lab-6thil,MISCONFIG-AllowAllIPs,0.0.0.0,255.255.255.255,true,1.2,false

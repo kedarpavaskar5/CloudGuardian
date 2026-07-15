@@ -1,0 +1,2 @@
+name,server_side_encryption_configuration,block_public_acls,block_public_policy
+cloudguardian-data-c8f4e2a3,"{""Rules"":[{""ApplyServerSideEncryptionByDefault"":{""KMSMasterKeyID"":null,""SSEAlgorithm"":""AES256""},""BlockedEncryptionTypes"":{""EncryptionType"":[""SSE-C""]},""BucketKeyEnabled"":false}]}",true,true

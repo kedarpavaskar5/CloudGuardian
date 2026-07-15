@@ -1,0 +1,2 @@
+instance_id,instance_type,instance_state,vpc_id,subnet_id,key_name,launch_time
+i-0c7395c282641f31e,t3.micro,running,vpc-056acc9b951114346,subnet-014929246c544396c,,2026-07-10T07:12:58Z

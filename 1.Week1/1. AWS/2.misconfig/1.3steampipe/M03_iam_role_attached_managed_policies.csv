@@ -1,0 +1,2 @@
+role_name,policy_arn
+cloudguardian-web-role,arn:aws:iam::aws:policy/AdministratorAccess

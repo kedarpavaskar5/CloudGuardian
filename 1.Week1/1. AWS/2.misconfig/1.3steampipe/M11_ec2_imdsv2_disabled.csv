@@ -1,0 +1,2 @@
+instance_id,name,http_tokens,http_endpoint,hop_limit
+i-0c7395c282641f31e,cloudguardian-web,optional,enabled,1

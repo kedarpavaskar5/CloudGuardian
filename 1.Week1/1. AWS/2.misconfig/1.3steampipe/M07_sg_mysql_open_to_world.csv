@@ -1,0 +1,2 @@
+group_name,group_id,from_port,to_port,ip_ranges
+cloudguardian-rds-sg,sg-0be0be5f1a7d28519,3306,3306,"[{""CidrIp"":""0.0.0.0/0"",""Description"":null}]"

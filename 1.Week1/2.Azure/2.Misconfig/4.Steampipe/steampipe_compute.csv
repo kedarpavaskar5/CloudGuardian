@@ -1,0 +1,3 @@
+resource,finding,value
+vm-web-cloudguardian-lab,password_auth_enabled,true
+vm-web-cloudguardian-lab_OsDisk_1,encryption_type,EncryptionAtRestWithPlatformKey

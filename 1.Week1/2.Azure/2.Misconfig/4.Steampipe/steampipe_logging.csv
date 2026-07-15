@@ -1,0 +1,4 @@
+resource,finding,value
+stcloudguardianlab6thil/blobServices/default,storage_diagnostic_setting,MISSING
+sql-cloudguardian-lab-6thil/sqldb-cloudguardian-lab,sql_diagnostic_setting,MISSING
+log-cloudguardian-lab,retention_in_days,30

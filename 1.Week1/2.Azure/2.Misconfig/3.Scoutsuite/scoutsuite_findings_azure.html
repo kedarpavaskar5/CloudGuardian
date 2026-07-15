@@ -1,0 +1,1346 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markdown Preview</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem 4rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 { color: #2c3e50; border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
+        code { background-color: #f1f1f1; padding: 2px 4px; border-radius: 4px; font-family: monospace; }
+        pre { background-color: #f1f1f1; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+        img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-top: 1rem; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f6f8; }
+        blockquote { border-left: 4px solid #0366d6; margin: 0; padding-left: 1rem; color: #586069; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ScoutSuite Audit Report — Azure</h1>
+<h2>CloudGuardian — CAP-CSE-3W | IIT Roorkee × Futurense</h2>
+<h3>PG Certificate in AI/GenAI Powered Cybersecurity</h3>
+<hr />
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Student</strong></td>
+<td>Vinay</td>
+</tr>
+<tr>
+<td><strong>Azure Subscription</strong></td>
+<td>7e3283a3-d466-4e6f-95b1-543eec016e08</td>
+</tr>
+<tr>
+<td><strong>Azure Tenant</strong></td>
+<td>fd9388b0-2c00-4cf1-9e27-123b32fe4a92</td>
+</tr>
+<tr>
+<td><strong>Region</strong></td>
+<td>Central US</td>
+</tr>
+<tr>
+<td><strong>Resource Group</strong></td>
+<td>rg-cloudguardian-lab</td>
+</tr>
+<tr>
+<td><strong>Tool</strong></td>
+<td>ScoutSuite v5.x (NCC Group)</td>
+</tr>
+<tr>
+<td><strong>Date</strong></td>
+<td>2026-07-03</td>
+</tr>
+<tr>
+<td><strong>Purpose</strong></td>
+<td>Automated multi-service Azure security audit with baseline vs insecure comparison</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>What is ScoutSuite?</h2>
+<p>ScoutSuite is an open-source multi-cloud security auditing tool maintained by NCC Group.
+Unlike Steampipe (SQL-based) or Prowler (CIS benchmark-driven), ScoutSuite uses a
+<strong>rule-engine approach</strong> — it fetches the full configuration of your cloud environment
+and evaluates it against a library of pre-defined security rules.</p>
+<p>It produces an <strong>interactive HTML dashboard</strong> that lets you drill into each service,
+view flagged rules, and inspect the raw resource configuration.</p>
+<p><strong>How it was run:</strong></p>
+<pre><code class="language-bash">conda activate scout_env
+python cspm/run_scout.py azure --cli --report-dir scoutsuite-report/insecure
+</code></pre>
+<hr />
+<h2>Executive Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Baseline (Secure)</th>
+<th>Insecure (16 Misconfigs)</th>
+<th>Delta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Total Checks</strong></td>
+<td>1031</td>
+<td>1031</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>Total Flagged</strong></td>
+<td>43</td>
+<td>52</td>
+<td><strong>+9</strong></td>
+</tr>
+<tr>
+<td><strong>Services Affected</strong></td>
+<td>5</td>
+<td>8</td>
+<td>+3</td>
+</tr>
+<tr>
+<td><strong>Danger-Level Findings</strong></td>
+<td>2</td>
+<td>4</td>
+<td>+2</td>
+</tr>
+<tr>
+<td><strong>Misconfigs Detected</strong></td>
+<td>—</td>
+<td>7 / 16</td>
+<td><strong>43.75%</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>Detection Rate Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Count</th>
+<th>Misconfigs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>✅ Detected</td>
+<td>7</td>
+<td>M1, M2, M3, M10, M11, M13, M15</td>
+</tr>
+<tr>
+<td>❌ Not Detected</td>
+<td>9</td>
+<td>M4, M5, M6, M7, M8, M9, M12, M14, M16</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Key Insight:</strong> ScoutSuite excels at network perimeter (NSG rules) and storage
+exposure checks but has significant blind spots in IAM privilege analysis, compute
+configuration, and logging granularity. This validates the multi-tool CSPM approach
+used in CloudGuardian.</p>
+</blockquote>
+<hr />
+<h2>Baseline vs Insecure — Delta Analysis</h2>
+<p>The following table shows the 9 <strong>NEW</strong> findings that appeared only after
+the 16 misconfigurations were injected via Terraform:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Service</th>
+<th>Rule ID</th>
+<th>Description</th>
+<th>Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Δ1</td>
+<td>Network</td>
+<td><code>network-security-groups-rule-inbound-internet-all</code></td>
+<td>All Inbound Access Allowed from Internet</td>
+<td>🔴 danger</td>
+</tr>
+<tr>
+<td>Δ2</td>
+<td>Network</td>
+<td><code>network-security-groups-rule-inbound-SSH</code></td>
+<td>Inbound SSH Access Allowed</td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td>Δ3</td>
+<td>Network</td>
+<td><code>network-security-groups-rule-inbound-RDP</code></td>
+<td>Inbound RDP Access Allowed</td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td>Δ4</td>
+<td>Network</td>
+<td><code>network-security-groups-rule-inbound-MsSQL</code></td>
+<td>Inbound MsSQL Access Allowed</td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td>Δ5</td>
+<td>Network</td>
+<td><code>network-security-groups-rule-inbound-UDP</code></td>
+<td>Inbound UDP Access Allowed</td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td>Δ6</td>
+<td>Storage</td>
+<td><code>storageaccount-public-blob-container</code></td>
+<td>Blob Containers Allowing Public Access</td>
+<td>🔴 danger</td>
+</tr>
+<tr>
+<td>Δ7</td>
+<td>Storage</td>
+<td><code>storageaccount-account-allowing-clear-text</code></td>
+<td>Secure Transfer (HTTPS) Not Enforced</td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td>Δ8</td>
+<td>Storage</td>
+<td><code>storageaccount-public-traffic-allowed</code></td>
+<td>Storage Allowing Public Traffic</td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td>Δ9</td>
+<td>SQL</td>
+<td><code>sqldatabase-allow-any-ip</code></td>
+<td>SQL Database Allow Ingress 0.0.0.0/0 (Any IP)</td>
+<td>🟡 warning</td>
+</tr>
+</tbody>
+</table>
+<h3>Screenshot (ScoutSuite Dashboard — Summary)</h3>
+<p><img alt="ScoutSuite Summary" src="./images/Scout_Suite_Summary_page_Dashboard.PNG" /></p>
+<hr />
+<h2>Detailed Findings by Service</h2>
+<hr />
+<h3>Service 1 — Storage Accounts (6 flagged)</h3>
+<h4>Finding S1: Public Blob Container</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>storageaccount-public-blob-container</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🔴 danger</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>stcloudguardianlab6thil</code> / container: <code>app-data</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td><code>misconfig_storage_public_container = true</code></td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td>✅ NEW (not in baseline)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> Any anonymous user with the container URL can list and download all blobs.
+This is the #1 cause of cloud data breaches.</p>
+<h4>Finding S2: Secure Transfer (HTTPS) Not Enforced</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>storageaccount-account-allowing-clear-text</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>stcloudguardianlab6thil</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td><code>misconfig_storage_disable_secure_transfer = true</code></td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td>✅ NEW (not in baseline)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> Data transmitted over HTTP can be intercepted via Man-in-the-Middle attacks.</p>
+<h4>Finding S3: Public Traffic Allowed</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>storageaccount-public-traffic-allowed</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>stcloudguardianlab6thil</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td><code>misconfig_storage_allow_public_network_access = true</code></td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td>✅ NEW (not in baseline)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> Storage account accepts connections from any IP address, removing network-level defense.</p>
+<h4>Finding S4: Access Keys Not Rotated</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>storageaccount-access-keys-not-rotated</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>stcloudguardianlab6thil</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td>N/A (Azure default)</td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td>Pre-existing (also in baseline)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> Long-lived access keys increase the window of opportunity for credential-based attacks.</p>
+<h4>Finding S5: Storage Not Encrypted with CMK</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>storageaccount-encrypted-not-customer-managed</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>stcloudguardianlab6thil</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td>N/A (Azure default — platform-managed key)</td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td>Pre-existing (also in baseline)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> Without a Customer-Managed Key (CMK), the organization cannot independently revoke encryption access.</p>
+<h4>Finding S6: Soft Delete Disabled</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>storageaccount-soft-delete-enabled</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>stcloudguardianlab6thil</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td>N/A (Azure default)</td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td>Pre-existing (also in baseline)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> Deleted blobs cannot be recovered, increasing risk of accidental or malicious data loss.</p>
+<h3>Screenshot (Storage Findings)</h3>
+<p><img alt="Storage Dashboard" src="./images/Storage_Account_Dashboard.PNG" />
+<img alt="Storage Configurations" src="./images/Storage_Account_Configurations_Dashboard.PNG" /></p>
+<hr />
+<h3>Service 2 — SQL Database (13 flagged)</h3>
+<h4>Finding SQL1: Allow Ingress from Any IP ⭐</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>sqldatabase-allow-any-ip</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>2 (AllowAzureServices 0.0.0.0 + MISCONFIG-AllowAllIPs 0.0.0.0–255.255.255.255)</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>sql-cloudguardian-lab-6thil</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td><code>misconfig_sql_allow_all_ips = true</code></td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td>✅ NEW (not in baseline)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> The MISCONFIG-AllowAllIPs firewall rule exposes the SQL server to the entire IPv4 address space.</p>
+<h4>Finding SQL2: Server Auditing Disabled ⭐</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>sqldatabase-servers-no-auditing</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>sql-cloudguardian-lab-6thil</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td><code>misconfig_disable_sql_logging = true</code></td>
+</tr>
+<tr>
+<td><strong>Delta</strong></td>
+<td>Pre-existing (also in baseline — auditing was never configured)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> No audit trail for database operations. Failed logins, SQL injection, and unauthorized queries leave no trace.</p>
+<h4>Finding SQL3: Database Auditing Disabled</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>sqldatabase-databases-no-auditing</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Resource</strong></td>
+<td><code>sqldb-cloudguardian-lab</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Finding SQL4: Server Threat Detection (ATP) Disabled</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>sqldatabase-servers-no-threat-detection</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h4>Finding SQL5: Database Threat Detection Disabled</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>sqldatabase-databases-no-threat-detection</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h4>Finding SQL6: TDE Not Encrypted with CMK</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>sqldatabase-servers-TDE-not-encrypted-with-customer-managed-key</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h4>Finding SQL7: AD Admin Not Configured</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>sqldatabase-servers-no-ad-admin-configured</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h4>Finding SQL8–SQL12: Vulnerability Assessment &amp; Alerts</h4>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Description</th>
+<th>Flagged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sqldatabase-servers-threat-detection-send-alerts-disabled</code></td>
+<td>ATP Alerts Disabled (Server)</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>sqldatabase-databases-threat-detection-send-alerts-disabled</code></td>
+<td>Threat Alerts Disabled (DB)</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>sqldatabase-servers-vulnerability-email-notif-to-admins-owners-not-set</code></td>
+<td>Email Notifications Not Set</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>sqldatabase-servers-vulnerability-recurring-scans-disabled</code></td>
+<td>Recurring Scans Disabled</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>sqldatabase-servers-vulnerability-send-scan-reports-to-not-configured</code></td>
+<td>Scan Reports Not Configured</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h3>Screenshot (SQL Database Findings)</h3>
+<p><img alt="SQL Dashboard" src="./images/SQL_Database_Dashboard.PNG" />
+<img alt="SQL Configs 1" src="./images/SQL_Configurations_Dashboard1.PNG" />
+<img alt="SQL Configs 2" src="./images/SQL_Configurations_Dashboard2.PNG" /></p>
+<hr />
+<h3>Service 3 — Network (5 flagged)</h3>
+<p>All 5 findings are <strong>NEW</strong> in the insecure scan and originate from two NSG rules:
+- <code>MISCONFIG-Allow-Any-Any</code> (any protocol, any port, from <code>*</code>)
+- <code>Allow-SSH-Inbound</code> (port 22 from <code>*</code>)</p>
+<h4>Finding N1: All Inbound Access Allowed from Internet</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>network-security-groups-rule-inbound-internet-all</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🔴 danger</td>
+</tr>
+<tr>
+<td><strong>Flagged Items</strong></td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>NSG</strong></td>
+<td><code>nsg-web-cloudguardian-lab</code></td>
+</tr>
+<tr>
+<td><strong>Source Rule</strong></td>
+<td><code>MISCONFIG-Allow-Any-Any</code> — priority 100, protocol <code>*</code>, port <code>*</code>, source <code>*</code></td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td><code>misconfig_nsg_allow_any_any = true</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Risk:</strong> Complete network perimeter collapse. Every port and protocol on the VM is exposed to the internet.</p>
+<h4>Finding N2: Inbound SSH Access</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule ID</strong></td>
+<td><code>network-security-groups-rule-inbound-SSH</code></td>
+</tr>
+<tr>
+<td><strong>Level</strong></td>
+<td>🟡 warning</td>
+</tr>
+<tr>
+<td><strong>Terraform Toggle</strong></td>
+<td><code>misconfig_ssh_open_to_internet = true</code></td>
+</tr>
+</tbody>
+</table>
+<h4>Finding N3–N5: RDP, MsSQL, UDP Access</h4>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Port</th>
+<th>Triggered By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>network-security-groups-rule-inbound-RDP</code></td>
+<td>3389</td>
+<td>MISCONFIG-Allow-Any-Any</td>
+</tr>
+<tr>
+<td><code>network-security-groups-rule-inbound-MsSQL</code></td>
+<td>1433</td>
+<td>MISCONFIG-Allow-Any-Any</td>
+</tr>
+<tr>
+<td><code>network-security-groups-rule-inbound-UDP</code></td>
+<td>UDP/*</td>
+<td>MISCONFIG-Allow-Any-Any</td>
+</tr>
+</tbody>
+</table>
+<h3>Screenshot (Network Findings)</h3>
+<p><img alt="Network Dashboard" src="./images/Network_Dashboard.PNG" />
+<img alt="Network Configs" src="./images/Network_Configuration_Dashboard.PNG" /></p>
+<hr />
+<h3>Service 4 — Logging &amp; Monitoring (8 flagged)</h3>
+<p>All 8 findings are <strong>pre-existing</strong> (also in baseline). They indicate that
+Activity Log Alerts are not configured for critical administrative actions.</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Missing Alert For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>create_delete_firewall_rule_exist</code></td>
+<td>SQL Server Firewall Rule Changes</td>
+</tr>
+<tr>
+<td><code>create_update_NSG_exist</code></td>
+<td>NSG Create/Update</td>
+</tr>
+<tr>
+<td><code>create_update_NSG_rule_exist</code></td>
+<td>NSG Rule Create/Update</td>
+</tr>
+<tr>
+<td><code>delete_NSG_exist</code></td>
+<td>NSG Delete</td>
+</tr>
+<tr>
+<td><code>delete_NSG_rule_exist</code></td>
+<td>NSG Rule Delete</td>
+</tr>
+<tr>
+<td><code>create_update_security_solution_exist</code></td>
+<td>Security Solution Create/Update</td>
+</tr>
+<tr>
+<td><code>delete_security_solution_exist</code></td>
+<td>Security Solution Delete</td>
+</tr>
+<tr>
+<td><code>logging-monitoring-log-alert-not-exist-create-policy-assignment</code></td>
+<td>Create Policy Assignment</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>Service 5 — Security Center (17 flagged)</h3>
+<p>All 17 findings are <strong>pre-existing</strong> (also in baseline). They indicate that
+Azure Defender (Standard Tier) is not enabled for 16 resource types, and
+no security contact email is configured.</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Description</th>
+<th>Flagged</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>securitycenter-standard-tier-not-enabled</code></td>
+<td>Azure Defender Not Enabled</td>
+<td>16</td>
+</tr>
+<tr>
+<td><code>securitycenter-security-contacts-not-set</code></td>
+<td>No Security Contact</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>Service 6 — Azure Active Directory (1 flagged)</h3>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Description</th>
+<th>Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aad-users-create-security-groups-disabled</code></td>
+<td>Users Can Create Security Groups</td>
+<td>🔴 danger</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> Pre-existing tenant-level setting — not caused by Terraform misconfigs.</p>
+<hr />
+<h3>Service 7 — RBAC (1 flagged)</h3>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Description</th>
+<th>Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rbac-administering-resource-locks-assigned</code></td>
+<td>No Resource Locks Role</td>
+<td>🔴 danger</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> Pre-existing — no resource lock management role assigned in the subscription.</p>
+<hr />
+<h3>Service 8 — Virtual Machines (1 flagged)</h3>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Description</th>
+<th>Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>virtual-machines-os-data-encrypted-cmk</code></td>
+<td>OS/Data Disks Not Encrypted with CMK</td>
+<td>🟡 warning</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note:</strong> Pre-existing governance observation. Azure encrypts all disks with Platform-Managed Keys (PMK) by default;
+this finding flags the absence of a Customer-Managed Key (CMK).</p>
+<hr />
+<h2>Misconfig-to-ScoutSuite Mapping (16/16 Verification)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Misconfiguration</th>
+<th>Terraform Toggle</th>
+<th>ScoutSuite Detection</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>Public Blob Container</td>
+<td><code>misconfig_storage_public_container</code></td>
+<td><code>storageaccount-public-blob-container</code> (🔴)</td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Public Network Access</td>
+<td><code>misconfig_storage_allow_public_network_access</code></td>
+<td><code>storageaccount-public-traffic-allowed</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Secure Transfer Disabled</td>
+<td><code>misconfig_storage_disable_secure_transfer</code></td>
+<td><code>storageaccount-account-allowing-clear-text</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>Min TLS Lowered (1.0)</td>
+<td><code>misconfig_storage_min_tls_version</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Shared Key Access</td>
+<td><code>misconfig_storage_allow_shared_key_access</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>CORS Allow All</td>
+<td><code>misconfig_storage_cors_allow_all</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>Owner Role at RG</td>
+<td><code>misconfig_iam_owner_role_at_rg_scope</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>VM Identity Over-Privileged</td>
+<td><code>misconfig_vm_identity_over_privileged</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M9</td>
+<td>SSH Password Auth</td>
+<td><code>misconfig_vm_allow_password_auth</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M10</td>
+<td>SSH Open to Internet</td>
+<td><code>misconfig_ssh_open_to_internet</code></td>
+<td><code>network-...-inbound-SSH</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M11</td>
+<td>NSG Allow Any-Any</td>
+<td><code>misconfig_nsg_allow_any_any</code></td>
+<td><code>network-...-inbound-internet-all</code> (🔴)</td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M12</td>
+<td>Subnet NSG Removed</td>
+<td><code>misconfig_vm_remove_nsg_association</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M13</td>
+<td>SQL Allow All IPs</td>
+<td><code>misconfig_sql_allow_all_ips</code></td>
+<td><code>sqldatabase-allow-any-ip</code></td>
+<td>✅ Detected</td>
+</tr>
+<tr>
+<td>M14</td>
+<td>Storage Logging Disabled</td>
+<td><code>misconfig_disable_storage_logging</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+<tr>
+<td>M15</td>
+<td>SQL Logging Disabled</td>
+<td><code>misconfig_disable_sql_logging</code></td>
+<td><code>sqldatabase-servers-no-auditing</code></td>
+<td>⚠️ Partial</td>
+</tr>
+<tr>
+<td>M16</td>
+<td>Short Log Retention</td>
+<td><code>misconfig_short_log_retention</code></td>
+<td>—</td>
+<td>❌ Not Detected</td>
+</tr>
+</tbody>
+</table>
+<h3>Confirmation: 7 / 16 Detected (43.75%)</h3>
+<hr />
+<h2>Gap Analysis — ScoutSuite Blind Spots</h2>
+<p>The following 9 misconfigurations are <strong>NOT detected</strong> by ScoutSuite.
+These gaps are covered by Prowler and/or Steampipe in the CloudGuardian multi-tool pipeline.</p>
+<h3>Storage Gaps (3)</h3>
+<table>
+<thead>
+<tr>
+<th>Misconfig</th>
+<th>Why ScoutSuite Misses It</th>
+<th>Covered By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M4 — TLS 1.0</td>
+<td>No rule checking <code>minimum_tls_version</code> on storage accounts</td>
+<td>Prowler ✅, Steampipe ✅</td>
+</tr>
+<tr>
+<td>M5 — Shared Key Access</td>
+<td>No rule checking <code>allow_shared_key_access</code> property</td>
+<td>Steampipe ✅</td>
+</tr>
+<tr>
+<td>M6 — CORS wildcard</td>
+<td>No rule inspecting CORS configuration on blob services</td>
+<td>Steampipe ✅</td>
+</tr>
+</tbody>
+</table>
+<h3>IAM/RBAC Gaps (2)</h3>
+<table>
+<thead>
+<tr>
+<th>Misconfig</th>
+<th>Why ScoutSuite Misses It</th>
+<th>Covered By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M7 — Owner at RG scope</td>
+<td>Only checks generic RBAC (resource locks), not specific overprivileged role assignments</td>
+<td>Prowler ✅, Steampipe ✅</td>
+</tr>
+<tr>
+<td>M8 — VM Managed Identity</td>
+<td>Does not evaluate managed identity role assignments at subscription scope</td>
+<td>Steampipe ✅</td>
+</tr>
+</tbody>
+</table>
+<h3>Compute Gap (1)</h3>
+<table>
+<thead>
+<tr>
+<th>Misconfig</th>
+<th>Why ScoutSuite Misses It</th>
+<th>Covered By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M9 — SSH Password Auth</td>
+<td>VM checks limited to disk encryption; no SSH authentication method inspection</td>
+<td>Prowler ✅, Steampipe ✅</td>
+</tr>
+</tbody>
+</table>
+<h3>Network Gap (1)</h3>
+<table>
+<thead>
+<tr>
+<th>Misconfig</th>
+<th>Why ScoutSuite Misses It</th>
+<th>Covered By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M12 — Subnet NSG removed</td>
+<td>Checks NSG <em>rules</em> but not whether NSGs are <em>associated</em> with subnets</td>
+<td>Steampipe ✅</td>
+</tr>
+</tbody>
+</table>
+<h3>Logging/Monitoring Gaps (2)</h3>
+<table>
+<thead>
+<tr>
+<th>Misconfig</th>
+<th>Why ScoutSuite Misses It</th>
+<th>Covered By</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M14 — Storage Diagnostics</td>
+<td>Checks Activity Log alerts but not per-resource diagnostic settings</td>
+<td>Steampipe ✅</td>
+</tr>
+<tr>
+<td>M16 — Log Retention</td>
+<td>No check on Log Analytics workspace retention period</td>
+<td>Steampipe ✅</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Cross-Tool Comparison Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Misconfiguration</th>
+<th>Prowler</th>
+<th>ScoutSuite</th>
+<th>Steampipe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>Public Blob Container</td>
+<td>✅ FAIL</td>
+<td>✅ danger</td>
+<td>✅ Query 2</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Public Network Access</td>
+<td>✅ FAIL</td>
+<td>✅ warning</td>
+<td>✅ Query 1</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Secure Transfer Disabled</td>
+<td>✅ FAIL</td>
+<td>✅ warning</td>
+<td>✅ Query 1</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>Min TLS Lowered</td>
+<td>✅ FAIL</td>
+<td>❌</td>
+<td>✅ Query 1</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Shared Key Access</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ Query 11b</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>CORS Allow All</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ Query 11a</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>Owner at RG Scope</td>
+<td>✅ FAIL</td>
+<td>❌</td>
+<td>✅ Query 3</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>VM Identity Overprivileged</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ Query 3</td>
+</tr>
+<tr>
+<td>M9</td>
+<td>SSH Password Auth</td>
+<td>✅ FAIL</td>
+<td>❌</td>
+<td>✅ Query 6</td>
+</tr>
+<tr>
+<td>M10</td>
+<td>SSH Open to Internet</td>
+<td>✅ FAIL</td>
+<td>✅ warning</td>
+<td>✅ Query 5</td>
+</tr>
+<tr>
+<td>M11</td>
+<td>NSG Allow Any-Any</td>
+<td>✅ FAIL</td>
+<td>✅ danger</td>
+<td>✅ Query 5</td>
+</tr>
+<tr>
+<td>M12</td>
+<td>Subnet NSG Removed</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅ Query 9</td>
+</tr>
+<tr>
+<td>M13</td>
+<td>SQL Allow All IPs</td>
+<td>✅ FAIL</td>
+<td>✅ warning</td>
+<td>✅ Query 4</td>
+</tr>
+<tr>
+<td>M14</td>
+<td>Storage Logging Disabled</td>
+<td>✅ FAIL</td>
+<td>❌</td>
+<td>✅ Query 8</td>
+</tr>
+<tr>
+<td>M15</td>
+<td>SQL Logging Disabled</td>
+<td>✅ FAIL</td>
+<td>⚠️ partial</td>
+<td>✅ Query 10</td>
+</tr>
+<tr>
+<td>M16</td>
+<td>Short Log Retention</td>
+<td>✅ FAIL</td>
+<td>❌</td>
+<td>✅ Query 12</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>TOTAL</strong></td>
+<td><strong>~12/16 (75%)</strong></td>
+<td><strong>7/16 (44%)</strong></td>
+<td><strong>16/16 (100%)</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Conclusion:</strong> No single CSPM tool detects all 16 misconfigurations. The combination of
+Prowler (broad CIS coverage), ScoutSuite (visual dashboard + network/storage depth),
+and Steampipe (precision SQL targeting) achieves <strong>100% coverage</strong> — validating the
+CloudGuardian multi-tool approach.</p>
+</blockquote>
+<hr />
+<h2>Appendix: ScoutSuite Command Reference</h2>
+<h3>Scan Execution</h3>
+<pre><code class="language-bash"># Activate ScoutSuite environment
+conda activate scout_env
+
+# Run baseline scan
+yes y | python cspm/run_scout.py azure --cli --report-dir scoutsuite-report/baseline
+
+# Run insecure scan (after misconfigs injected)
+yes y | python cspm/run_scout.py azure --cli --report-dir scoutsuite-report/insecure
+</code></pre>
+<h3>Report Locations</h3>
+<table>
+<thead>
+<tr>
+<th>Report</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insecure HTML Dashboard</td>
+<td><code>scoutsuite-report/insecure/azure-tenant-fd9388b0-*.html</code></td>
+</tr>
+<tr>
+<td>Baseline HTML Dashboard</td>
+<td><code>scoutsuite-report/baseline/azure-tenant-fd9388b0-*.html</code></td>
+</tr>
+<tr>
+<td>Insecure Raw JSON</td>
+<td><code>scoutsuite-report/insecure/scoutsuite-results/scoutsuite_results_*.js</code></td>
+</tr>
+<tr>
+<td>Baseline Raw JSON</td>
+<td><code>scoutsuite-report/baseline/scoutsuite-results/scoutsuite_results_*.js</code></td>
+</tr>
+</tbody>
+</table>
+    </div>
+</body>
+</html>

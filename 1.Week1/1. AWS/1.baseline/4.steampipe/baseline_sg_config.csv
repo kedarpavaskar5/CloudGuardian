@@ -1,0 +1,6 @@
+group_id,group_name,description,vpc_id
+sg-0aaba2fb7e64252aa,launch-wizard-1,launch-wizard-1 created 2026-06-22T15:58:49.421Z,vpc-0bdec8ffc827ded05
+sg-01da1c49051ece125,default,default VPC security group,vpc-0bdec8ffc827ded05
+sg-0be0be5f1a7d28519,cloudguardian-rds-sg,Managed by Terraform,vpc-056acc9b951114346
+sg-0d804f6e736cdd9da,default,default VPC security group,vpc-056acc9b951114346
+sg-0fdba0a657788f1d7,cloudguardian-web-sg,Managed by Terraform,vpc-056acc9b951114346

@@ -1,0 +1,2 @@
+name,is_logging,log_file_validation_enabled,is_multi_region_trail,include_global_service_events,kms_key_id,log_group_arn
+cloudguardian-trail,true,false,false,false,,

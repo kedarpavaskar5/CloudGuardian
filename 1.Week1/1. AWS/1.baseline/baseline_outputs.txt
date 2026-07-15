@@ -1,0 +1,8 @@
+private_subnet_id = "subnet-06415df4407c53071"
+public_subnet_id = "subnet-014929246c544396c"
+rds_endpoint = "cloudguardian-db.cxuyey2k27jg.ap-south-1.rds.amazonaws.com:3306"
+rds_security_group_id = "sg-0be0be5f1a7d28519"
+s3_bucket_name = "cloudguardian-data-c8f4e2a3"
+vpc_id = "vpc-056acc9b951114346"
+web_public_ip = "35.154.255.133"
+web_security_group_id = "sg-0fdba0a657788f1d7"

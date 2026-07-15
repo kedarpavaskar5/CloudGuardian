@@ -1,0 +1,2 @@
+db_instance_identifier,engine,class,multi_az,publicly_accessible,storage_encrypted
+cloudguardian-db,mysql,db.t3.micro,false,false,true

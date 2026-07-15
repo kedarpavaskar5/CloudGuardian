@@ -1,0 +1,5 @@
+resource,finding,value
+nsg-web-cloudguardian-lab,ssh_open_to_internet,source_address_prefix=*
+nsg-web-cloudguardian-lab,allow_any_any,protocol=* port=* source=*
+snet-web-cloudguardian-lab,nsg_association_removed,no_nsg_attached
+snet-data-cloudguardian-lab,nsg_association_missing,no_nsg_attached

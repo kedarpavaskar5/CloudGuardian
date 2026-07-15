@@ -1,0 +1,7 @@
+rule_id,description,level,flagged_items,resource,terraform_toggle,delta
+storageaccount-public-blob-container,Blob Containers Allowing Public Access,danger,1,stcloudguardianlab6thil/app-data,misconfig_storage_public_container,NEW
+storageaccount-account-allowing-clear-text,Secure Transfer (HTTPS) Not Enforced,warning,1,stcloudguardianlab6thil,misconfig_storage_disable_secure_transfer,NEW
+storageaccount-public-traffic-allowed,Storage Allowing Public Traffic,warning,1,stcloudguardianlab6thil,misconfig_storage_allow_public_network_access,NEW
+storageaccount-access-keys-not-rotated,Access Keys Not Rotated,warning,1,stcloudguardianlab6thil,N/A,PRE-EXISTING
+storageaccount-encrypted-not-customer-managed,Storage Not Encrypted with CMK,warning,1,stcloudguardianlab6thil,N/A,PRE-EXISTING
+storageaccount-soft-delete-enabled,Soft Delete Disabled,warning,1,stcloudguardianlab6thil,N/A,PRE-EXISTING

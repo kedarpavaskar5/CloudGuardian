@@ -1,0 +1,2 @@
+name,assume_role_policy_std
+cloudguardian-web-role,"{""Statement"":[{""Action"":[""sts:assumerole""],""Effect"":""Allow"",""Principal"":{""Service"":[""ec2.amazonaws.com""]}}],""Version"":""2012-10-17""}"
